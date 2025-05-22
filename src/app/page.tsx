@@ -2,9 +2,13 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import HeroSearch from "../components/HeroSearch";
 import FilterSidebar from "../components/FilterSidebar";
 import PropertyCard from "../components/PropertyCard";
+
+// MapWidget을 SSR 없이 동적 로드
+const MapWidget = dynamic(() => import("../components/MapWidget"), { ssr: false });
 
 interface Property {
   title: string;
@@ -16,22 +20,45 @@ interface Property {
 
 export default function HomePage() {
   const allProperties: Property[] = [
-    { title: "Cozy Inn", location: "New York", lat: 40.7128, lng: -74.0060, imageUrl: "https://picsum.photos/id/1011/400/300" },
-    { title: "Beachfront Hotel", location: "Miami Beach", lat: 25.7907, lng: -80.1300, imageUrl: "https://picsum.photos/id/1015/400/300" },
-    { title: "Mountain Retreat", location: "Aspen", lat: 39.1911, lng: -106.8175, imageUrl: "https://picsum.photos/id/1003/400/300" },
+    {
+      title: "Cozy Inn",
+      location: "New York",
+      lat: 40.7128,
+      lng: -74.0060,
+      imageUrl: "https://picsum.photos/id/1011/400/300",
+    },
+    {
+      title: "Beachfront Hotel",
+      location: "Miami Beach",
+      lat: 25.7907,
+      lng: -80.1300,
+      imageUrl: "https://picsum.photos/id/1015/400/300",
+    },
+    {
+      title: "Mountain Retreat",
+      location: "Aspen",
+      lat: 39.1911,
+      lng: -106.8175,
+      imageUrl: "https://picsum.photos/id/1003/400/300",
+    },
   ];
 
-  const [destination, setDestination] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [priceRange, setPriceRange] = useState(250);
+  // HeroSearch 상태
+  const [destination, setDestination] = useState<string>("");
+  const [checkIn, setCheckIn] = useState<string>("");
+  const [checkOut, setCheckOut] = useState<string>("");
+
+  // FilterSidebar 상태
+  const [priceRange, setPriceRange] = useState<number>(250);
   const [types, setTypes] = useState<string[]>([]);
+
+  // 검색 결과 상태
   const [results, setResults] = useState<Property[]>(allProperties);
 
   const handleSearch = () => {
     let filtered = allProperties;
     if (destination.trim()) {
-      filtered = filtered.filter(p =>
+      filtered = filtered.filter((p) =>
         p.location.toLowerCase().includes(destination.trim().toLowerCase())
       );
     }
@@ -59,12 +86,18 @@ export default function HomePage() {
         />
 
         <div className="flex-1 md:ml-8">
-          <div className="h-64 w-full mb-8 rounded-2xl overflow-hidden shadow-lg">
-            {/* MapWidget 등 */}
-          </div>
+          {/* 지도 (SSR 꺼진 동적 컴포넌트) */}
+          <MapWidget properties={results} />
+
+          {/* 결과 카드 그리드 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.map((p, i) => (
-              <PropertyCard key={i} {...p} />
+              <PropertyCard
+                key={i}
+                title={p.title}
+                location={p.location}
+                imageUrl={p.imageUrl}
+              />
             ))}
           </div>
         </div>
