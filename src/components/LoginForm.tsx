@@ -16,6 +16,7 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       if (isLoginMode) {
         // 로그인
@@ -24,49 +25,64 @@ export default function LoginForm() {
         // 회원가입
         await createUserWithEmailAndPassword(auth, email, password);
       }
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      // any 대신 unknown 사용
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: "0 auto" }}>
-      <h2>{isLoginMode ? "로그인" : "회원가입"}</h2>
-      <div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md p-8 bg-white rounded-lg shadow space-y-6"
+      >
+        <h2 className="text-2xl font-semibold text-center text-gray-800">
+          {isLoginMode ? "로그인" : "회원가입"}
+        </h2>
+
         <input
           type="email"
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{ width: "100%", padding: 8, marginBottom: 8 }}
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-      </div>
-      <div>
         <input
           type="password"
           placeholder="비밀번호"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{ width: "100%", padding: 8, marginBottom: 12 }}
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-      </div>
-      <button type="submit" disabled={loading} style={{ width: "100%", padding: 10 }}>
-        {loading ? "처리 중…" : isLoginMode ? "로그인" : "회원가입"}
-      </button>
-      <p style={{ textAlign: "center", marginTop: 12 }}>
-        {isLoginMode ? "계정이 없으신가요? " : "이미 계정이 있으신가요? "}
+
         <button
-          type="button"
-          onClick={() => setIsLoginMode(!isLoginMode)}
-          style={{ color: "blue", background: "none", border: "none", cursor: "pointer" }}
+          type="submit"
+          disabled={loading}
+          className="w-full py-2 text-white bg-indigo-600 rounded hover:bg-indigo-700 disabled:opacity-50"
         >
-          {isLoginMode ? "회원가입" : "로그인"}
+          {loading ? "처리 중…" : isLoginMode ? "로그인" : "회원가입"}
         </button>
-      </p>
-    </form>
+
+        <p className="text-center text-gray-600">
+          {isLoginMode ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}{" "}
+          <button
+            type="button"
+            onClick={() => setIsLoginMode(!isLoginMode)}
+            className="text-indigo-600 hover:underline"
+          >
+            {isLoginMode ? "회원가입" : "로그인"}
+          </button>
+        </p>
+      </form>
+    </div>
   );
 }
