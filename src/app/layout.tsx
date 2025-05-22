@@ -1,22 +1,13 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
+
+import type { Metadata } from "next";
 import Layout from "../components/Layout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Cancel Alert",
-  description: "취소 알림 서비스",
+  title: "CancelAlert",
+  description: "Find cancellation alerts for your next stay",
 };
 
 export default function RootLayout({
@@ -26,12 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Layout>
-          {children}
-        </Layout>
+      <body>
+        <Layout>{children}</Layout>
       </body>
     </html>
   );
