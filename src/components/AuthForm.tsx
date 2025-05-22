@@ -16,34 +16,15 @@ export default function AuthForm() {
     try {
       await signInWithEmailAndPassword(auth, email, pw);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      setError(msg);
     }
   };
 
   return (
     <form onSubmit={onSubmit} className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl mb-4">Login</h2>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        className="w-full mb-3 px-3 py-2 border rounded"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={pw}
-        onChange={e => setPw(e.target.value)}
-        className="w-full mb-4 px-3 py-2 border rounded"
-        required
-      />
-      <button type="submit" className="w-full bg-teal-600 text-white py-2 rounded">
-        Sign In
-      </button>
+      {/* ... */}
     </form>
   );
 }
