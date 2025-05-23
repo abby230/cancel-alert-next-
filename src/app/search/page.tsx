@@ -70,8 +70,8 @@ function Recenter({ center }: { center: [number, number] }) {
 export default function SearchPage() {
   const regions = Object.keys(data);
   const searchParams = useSearchParams();
-  const initialRegion = searchParams.get('region') ?? regions[0];
-  const [selected, setSelected] = useState<string>(initialRegion);
+  const initial = searchParams.get('region') ?? regions[0];
+  const [selected, setSelected] = useState<string>(initial);
   const center = regionCoords[selected];
 
   return (
@@ -79,7 +79,13 @@ export default function SearchPage() {
       <h2 className="text-2xl font-semibold">숙소 검색</h2>
       <nav className="flex space-x-4">
         {regions.map(region => (
-          <button key={region} onClick={() => setSelected(region)} className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>{region}</button>
+          <button
+            key={region}
+            onClick={() => setSelected(region)}
+            className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          >
+            {region}
+          </button>
         ))}
       </nav>
       <div className="h-64 w-full rounded-lg overflow-hidden">
@@ -96,7 +102,7 @@ export default function SearchPage() {
       <ul className="space-y-4">
         {data[selected].map(accom => (
           <li key={accom.id} className="flex items-center border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-            <img src={accom.imageUrl} alt={accom.name} className="object-cover w-48 h-32"/>
+            <img src={accom.imageUrl} alt={accom.name} className="object-cover w-48 h-32" />
             <div className="p-4">
               <h4 className="text-lg font-semibold truncate">{accom.name}</h4>
               <p className="text-gray-700 mb-1">₩{accom.price.toLocaleString()}</p>
