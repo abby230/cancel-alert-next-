@@ -1,6 +1,6 @@
 // File: src/app/search/page.tsx         
 'use client';
-export const prerender = false; 
+export const dynamic = 'force-dynamic'; 
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
