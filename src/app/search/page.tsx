@@ -2,9 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
-import { useMap } from 'react-leaflet';
 import { useSearchParams } from 'next/navigation';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface Accommodation {
@@ -14,6 +13,7 @@ interface Accommodation {
   price: number;
 }
 
+// 지역별 숙소 데이터
 const data: Record<string, Accommodation[]> = {
   서울: [
     { id: 1, name: '한강뷰 스위트', imageUrl: 'https://picsum.photos/seed/seoul1/300/200', price: 120000 },
@@ -52,6 +52,7 @@ const data: Record<string, Accommodation[]> = {
   ],
 };
 
+// 지역별 좌표 매핑
 const regionCoords: Record<string, [number, number]> = {
   서울: [37.5665, 126.9780],
   부산: [35.1796, 129.0756],
@@ -59,11 +60,6 @@ const regionCoords: Record<string, [number, number]> = {
   강원: [37.8228, 128.1555],
   경기: [37.4138, 127.5183],
 };
-
-const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContainer), { ssr: false });
-const TileLayer    = dynamic(() => import('react-leaflet').then(m => m.TileLayer),    { ssr: false });
-const Marker       = dynamic(() => import('react-leaflet').then(m => m.Marker),       { ssr: false });
-const Popup        = dynamic(() => import('react-leaflet').then(m => m.Popup),        { ssr: false });
 
 function Recenter({ center }: { center: [number, number] }) {
   const map = useMap();
@@ -83,13 +79,7 @@ export default function SearchPage() {
       <h2 className="text-2xl font-semibold">숙소 검색</h2>
       <nav className="flex space-x-4">
         {regions.map(region => (
-          <button
-            key={region}
-            onClick={() => setSelected(region)}
-            className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            {region}
-          </button>
+          <button key={region} onClick={() => setSelected(region)} className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>{region}</button>
         ))}
       </nav>
       <div className="h-64 w-full rounded-lg overflow-hidden">
@@ -98,9 +88,7 @@ export default function SearchPage() {
           <Recenter center={center} />
           {data[selected].map(accom => (
             <Marker key={accom.id} position={center}>
-              <Popup>
-                {accom.name}<br />₩{accom.price.toLocaleString()}
-              </Popup>
+              <Popup>{accom.name}<br/>₩{accom.price.toLocaleString()}</Popup>
             </Marker>
           ))}
         </MapContainer>
@@ -108,7 +96,7 @@ export default function SearchPage() {
       <ul className="space-y-4">
         {data[selected].map(accom => (
           <li key={accom.id} className="flex items-center border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-            <img src={accom.imageUrl} alt={accom.name} className="object-cover w-48 h-32" />
+            <img src={accom.imageUrl} alt={accom.name} className="object-cover w-48 h-32"/>
             <div className="p-4">
               <h4 className="text-lg font-semibold truncate">{accom.name}</h4>
               <p className="text-gray-700 mb-1">₩{accom.price.toLocaleString()}</p>
