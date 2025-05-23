@@ -1,4 +1,14 @@
-@tailwind base;
+/* globals.css */
+html {
+  /* macOS 사파리/크롬 렌더링 최적화 */
+  -webkit-font-smoothing: antialiased;
+
+  /* Firefox 렌더링 최적화 */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* 전반적인 텍스트 렌더링 최적화 */
+  text-rendering: optimizeLegibility;
+}@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
