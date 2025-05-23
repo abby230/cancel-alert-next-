@@ -1,5 +1,6 @@
-// File: src/app/search/page.tsx
+// File: src/app/search/page.tsx         
 'use client';
+export const prerender = false; 
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -8,7 +9,6 @@ import 'leaflet/dist/leaflet.css';
 
 interface Accommodation { id: number; name: string; imageUrl: string; price: number; }
 
-// 지역별 숙소 데이터 (서울, 부산, 제주, 강원, 경기 모두 포함)
 const data: Record<string, Accommodation[]> = {
   서울: [
     { id: 1, name: '한강뷰 스위트', imageUrl: 'https://picsum.photos/seed/seoul1/300/200', price: 120000 },
@@ -47,7 +47,6 @@ const data: Record<string, Accommodation[]> = {
   ],
 };
 
-// 지역별 좌표 매핑
 const regionCoords: Record<string, [number, number]> = {
   서울: [37.5665, 126.9780],
   부산: [35.1796, 129.0756],
@@ -56,10 +55,13 @@ const regionCoords: Record<string, [number, number]> = {
   경기: [37.4138, 127.5183],
 };
 
-// 지도 중심 재설정 컴포넌트
 function Recenter({ center }: { center: [number, number] }) {
   const map = useMap();
-  useEffect(() => { map.setView(center, 10); }, [center, map]);
+  useEffect(() => {
+    if (map && typeof map.setView === 'function') {
+      map.setView(center, 10);
+    }
+  }, [center, map]);
   return null;
 }
 
@@ -67,7 +69,7 @@ export default function SearchPage() {
   const params = useSearchParams();
   const regions = Object.keys(data);
   const initial = params.get('region') ?? regions[0];
-  const [selected, setSelected] = useState<string>(initial);
+  const [selected, setSelected] = useState(initial);
   const center = regionCoords[selected];
 
   return (
@@ -79,7 +81,9 @@ export default function SearchPage() {
             key={region}
             onClick={() => setSelected(region)}
             className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >{region}</button>
+          >
+            {region}
+          </button>
         ))}
       </nav>
       <div className="h-64 w-full rounded-lg overflow-hidden">
@@ -88,7 +92,9 @@ export default function SearchPage() {
           <Recenter center={center} />
           {data[selected].map(a => (
             <Marker key={a.id} position={center}>
-              <Popup>{a.name}<br/>₩{a.price.toLocaleString()}</Popup>
+              <Popup>
+                {a.name}<br />₩{a.price.toLocaleString()}
+              </Popup>
             </Marker>
           ))}
         </MapContainer>
