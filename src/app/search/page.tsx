@@ -1,19 +1,14 @@
 // File: src/app/search/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-interface Accommodation {
-  id: number;
-  name: string;
-  imageUrl: string;
-  price: number;
-}
+interface Accommodation { id: number; name: string; imageUrl: string; price: number; }
 
-// 지역별 숙소 데이터
+// 지역별 숙소 데이터 (서울, 부산, 제주, 강원, 경기 모두 포함)
 const data: Record<string, Accommodation[]> = {
   서울: [
     { id: 1, name: '한강뷰 스위트', imageUrl: 'https://picsum.photos/seed/seoul1/300/200', price: 120000 },
@@ -61,16 +56,17 @@ const regionCoords: Record<string, [number, number]> = {
   경기: [37.4138, 127.5183],
 };
 
+// 지도 중심 재설정 컴포넌트
 function Recenter({ center }: { center: [number, number] }) {
   const map = useMap();
-  map.setView(center, 10);
+  useEffect(() => { map.setView(center, 10); }, [center, map]);
   return null;
 }
 
 export default function SearchPage() {
+  const params = useSearchParams();
   const regions = Object.keys(data);
-  const searchParams = useSearchParams();
-  const initial = searchParams.get('region') ?? regions[0];
+  const initial = params.get('region') ?? regions[0];
   const [selected, setSelected] = useState<string>(initial);
   const center = regionCoords[selected];
 
@@ -83,29 +79,27 @@ export default function SearchPage() {
             key={region}
             onClick={() => setSelected(region)}
             className={`px-4 py-2 rounded ${selected === region ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            {region}
-          </button>
+          >{region}</button>
         ))}
       </nav>
       <div className="h-64 w-full rounded-lg overflow-hidden">
         <MapContainer center={center} zoom={10} scrollWheelZoom={false} className="h-full w-full">
           <TileLayer attribution="© OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <Recenter center={center} />
-          {data[selected].map(accom => (
-            <Marker key={accom.id} position={center}>
-              <Popup>{accom.name}<br/>₩{accom.price.toLocaleString()}</Popup>
+          {data[selected].map(a => (
+            <Marker key={a.id} position={center}>
+              <Popup>{a.name}<br/>₩{a.price.toLocaleString()}</Popup>
             </Marker>
           ))}
         </MapContainer>
       </div>
       <ul className="space-y-4">
-        {data[selected].map(accom => (
-          <li key={accom.id} className="flex items-center border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-            <img src={accom.imageUrl} alt={accom.name} className="object-cover w-48 h-32" />
+        {data[selected].map(a => (
+          <li key={a.id} className="flex items-center border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+            <img src={a.imageUrl} alt={a.name} className="object-cover w-48 h-32" />
             <div className="p-4">
-              <h4 className="text-lg font-semibold truncate">{accom.name}</h4>
-              <p className="text-gray-700 mb-1">₩{accom.price.toLocaleString()}</p>
+              <h4 className="text-lg font-semibold truncate">{a.name}</h4>
+              <p className="text-gray-700 mb-1">₩{a.price.toLocaleString()}</p>
             </div>
           </li>
         ))}
